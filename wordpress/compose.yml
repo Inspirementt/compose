@@ -1,7 +1,7 @@
 #Compose version:
 version: '2'
 
-# Stack Name: "monitor"
+# Stack Name: "wordpress"
 
 #######################################################
 #                    VARIABLE LIST                    #
@@ -40,9 +40,9 @@ services:
 
 #################### WORDPRESS INSTALLATION ####################
 
-services:
 # Wordpress Installation
-  website-${SITE_NAME}-wordpress:
+  wordpress:
+    container_name: website-${SITE_NAME}-wordpress
     hostname: ${SITE_NAME}
     image: wordpress:latest
     ports:
@@ -56,21 +56,22 @@ services:
     restart: unless-stopped
     environment:
       # Reverse Proxy and SSL
-      ${REVERSE_PROXY_LETSENCRYPT_ENABLED} VIRTUAL_PORT=${HOST_PORT}
-      ${REVERSE_PROXY_LETSENCRYPT_ENABLED} VIRTUAL_HOST=${SITE_URL},www.${SITE_URL}
-      ${REVERSE_PROXY_LETSENCRYPT_ENABLED} LETSENCRYPT_HOST=${SITE_URL},www.${SITE_URL}
-      ${REVERSE_PROXY_LETSENCRYPT_ENABLED} LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
+      - VIRTUAL_PORT=${HOST_PORT}
+      - VIRTUAL_HOST=${SITE_URL},www.${SITE_URL}
+      - LETSENCRYPT_HOST=${SITE_URL},www.${SITE_URL}
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
       # Container Specific
       - WORDPRESS_DB_HOST=${SITE_NAME}-database:3306
       - WORDPRESS_DB_USER=wordpress
       - WORDPRESS_DB_PASSWORD=${DATABASE_PASSWORD}
       - WORDPRESS_DB_NAME=wordpress
     networks:
-      ${REVERSE_PROXY_LETSENCRYPT_ENABLED} ${REVERSE_PROXY_NETWORK}
+      - ${REVERSE_PROXY_NETWORK}
       - ${SITE_NAME}
 
 # Database
-  ${SITE_NAME}-database:
+  database:
+    container_name: website-${SITE_NAME}-database
     hostname: ${SITE_NAME}-database
     image: mysql:latest
     command: '--default-authentication-plugin=mysql_native_password'
@@ -91,11 +92,12 @@ services:
       - ${SITE_NAME}
 
 
-####################################################
+##################################################
 #                    NETWORKS                    #
-####################################################
+##################################################
 networks:
 
 #################### REVERSE PROXY ####################
-  ${REVERSE_PROXY_NETWORK}:
-    external: true
+  reverseproxy:
+    external:
+      name: ${REVERSE_PROXY_NETWORK}
