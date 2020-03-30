@@ -1,0 +1,101 @@
+#Compose version:
+version: '2'
+
+# Stack Name: "wordpress rproxy"
+
+#######################################################
+#                    VARIABLE LIST                    #
+#######################################################
+
+#################### PORTS ####################
+# HOST_PORT
+#   - The port on the host on which the site will be accessible
+
+#################### WEBSITE ####################
+# SITE_NAME
+#   - Site name (lowercase without spaces)
+#  SITE_URL
+#   - Site URL (without subdomain. A naked and a "www" subdomain entry is added automatically)
+
+#################### DATABASE ####################
+# DATABASE_PASSWORD
+#   - You normally won't have to manually enter this anywhere, so make it complex
+# MYSQL_ROOT_PASSWORD
+#   - You normally won't have to manually enter this anywhere, so make it complex and different from the database password
+
+#################### REVERSE PROXY AND LETSENCRYPT ####################
+# REVERSE_PROXY_NETWORK
+#   - The external Docker network the reverse proxy runs on
+# LETSENCRYPT_EMAIL
+#   - The email address to use with Let's Encrypt
+
+
+####################################################
+#                    CONTAINERS                    #
+####################################################
+services:
+
+
+#################### WORDPRESS INSTALLATION ####################
+
+# Wordpress Installation
+  wordpress:
+    container_name: website-${SITE_NAME}-wordpress
+    hostname: ${SITE_NAME}
+    image: wordpress:latest
+    ports:
+      - ${HOST_PORT}:80
+    volumes:
+      # Timezone
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      # Configuration
+      - website-${SITE_NAME}-wordpress:/var/www/html
+    restart: unless-stopped
+    environment:
+      # Reverse Proxy and SSL
+      - VIRTUAL_PORT=${HOST_PORT}
+      - VIRTUAL_HOST=${SITE_URL},www.${SITE_URL}
+      - LETSENCRYPT_HOST=${SITE_URL},www.${SITE_URL}
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
+      # Container Specific
+      - WORDPRESS_DB_HOST=${SITE_NAME}-database:3306
+      - WORDPRESS_DB_USER=wordpress
+      - WORDPRESS_DB_PASSWORD=${DATABASE_PASSWORD}
+      - WORDPRESS_DB_NAME=wordpress
+    networks:
+      - ${REVERSE_PROXY_NETWORK}
+      - ${SITE_NAME}
+
+# Database
+  database:
+    container_name: website-${SITE_NAME}-database
+    hostname: ${SITE_NAME}-database
+    image: mysql:latest
+    command: '--default-authentication-plugin=mysql_native_password'
+    volumes:
+      # Timezone
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      # Configuration
+      - website-${SITE_NAME}-database:/var/lib/mysql
+    restart: unless-stopped
+    environment:
+      # Container Specific
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=wordpress
+      - MYSQL_USER=wordpress
+      - MYSQL_PASSWORD=${DATABASE_PASSWORD}
+    networks:
+      - ${SITE_NAME}
+
+
+##################################################
+#                    NETWORKS                    #
+##################################################
+networks:
+
+#################### REVERSE PROXY ####################
+  reverseproxy:
+    external:
+      name: ${REVERSE_PROXY_NETWORK}

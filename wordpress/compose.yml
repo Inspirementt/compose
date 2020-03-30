@@ -23,12 +23,6 @@ version: '2'
 # MYSQL_ROOT_PASSWORD
 #   - You normally won't have to manually enter this anywhere, so make it complex and different from the database password
 
-#################### REVERSE PROXY AND LETSENCRYPT ####################
-# REVERSE_PROXY_NETWORK
-#   - The external Docker network the reverse proxy runs on
-# LETSENCRYPT_EMAIL
-#   - The email address to use with Let's Encrypt
-
 
 ####################################################
 #                    CONTAINERS                    #
@@ -53,11 +47,6 @@ services:
       - website-${SITE_NAME}-wordpress:/var/www/html
     restart: unless-stopped
     environment:
-      # Reverse Proxy and SSL
-      - VIRTUAL_PORT=${HOST_PORT}
-      - VIRTUAL_HOST=${SITE_URL},www.${SITE_URL}
-      - LETSENCRYPT_HOST=${SITE_URL},www.${SITE_URL}
-      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
       # Container Specific
       - WORDPRESS_DB_HOST=${SITE_NAME}-database:3306
       - WORDPRESS_DB_USER=wordpress
@@ -88,14 +77,3 @@ services:
       - MYSQL_PASSWORD=${DATABASE_PASSWORD}
     networks:
       - ${SITE_NAME}
-
-
-##################################################
-#                    NETWORKS                    #
-##################################################
-networks:
-
-#################### REVERSE PROXY ####################
-  default:
-    external:
-      name: ${REVERSE_PROXY_NETWORK}
