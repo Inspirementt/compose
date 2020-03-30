@@ -8,29 +8,27 @@ version: '2'
 #######################################################
 
 #################### PORTS ####################
-# ${HOST_PORT}
+# HOST_PORT
 #   - The port on the host on which the site will be accessible
 
 #################### WEBSITE ####################
-# ${SITE_NAME}
+# SITE_NAME
 #   - Site name (lowercase without spaces)
-#  ${SITE_URL}
+#  SITE_URL
 #   - Site URL (without subdomain. A naked and a "www" subdomain entry is added automatically)
 
 #################### DATABASE ####################
-# ${DATABASE_PASSWORD}
+# DATABASE_PASSWORD
 #   - You normally won't have to manually enter this anywhere, so make it complex
-# ${MYSQL_ROOT_PASSWORD}
+# MYSQL_ROOT_PASSWORD
 #   - You normally won't have to manually enter this anywhere, so make it complex and different from the database password
 
 #################### REVERSE PROXY AND LETSENCRYPT ####################
-# ${REVERSE_PROXY_LETSENCRYPT_ENABLED} - 
+# REVERSE_PROXY_LETSENCRYPT_ENABLED
 #   - Use a single space (" ") for enabled, and a hashtag ("#") for disabled
-# ${REVERSE-PROXY_NETWORK}
+# REVERSE_PROXY_NETWORK
 #   - The external Docker network the reverse proxy runs on
-# ${REVERSE-PROXY_NETWORK}
-#   - The external Docker network the reverse proxy runs on
-# ${LETSENCRYPT_EMAIL}
+# LETSENCRYPT_EMAIL
 #   - The email address to use with Let's Encrypt
 
 
@@ -68,7 +66,7 @@ ${REVERSE_PROXY_LETSENCRYPT_ENABLED}     - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL
       - WORDPRESS_DB_PASSWORD=${DATABASE_PASSWORD}
       - WORDPRESS_DB_NAME=wordpress
     networks:
-      - ${REVERSE-PROXY_NETWORK}
+      - ${REVERSE_PROXY_NETWORK}
       - ${SITE_NAME}
 
 # Database
@@ -99,5 +97,5 @@ ${REVERSE_PROXY_LETSENCRYPT_ENABLED}     - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL
 networks:
 
 #################### REVERSE PROXY ####################
-  ${REVERSE-PROXY_NETWORK}:
+  ${REVERSE_PROXY_NETWORK}:
     external: true
