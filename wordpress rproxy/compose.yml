@@ -21,7 +21,7 @@ version: '2'
 # DATABASE_PASSWORD
 #   - You normally won't have to manually enter this anywhere, so make it complex
 # MYSQL_ROOT_PASSWORD
-#   - You normally won't have to manually enter this anywhere, so make it complex and different from the database password
+#   - You normally won't have to manually enter this anywhere, so make it complex
 
 #################### REVERSE PROXY AND LETSENCRYPT ####################
 # REVERSE_PROXY_NETWORK
@@ -64,7 +64,6 @@ services:
       - WORDPRESS_DB_PASSWORD=${DATABASE_PASSWORD}
       - WORDPRESS_DB_NAME=wordpress
     networks:
-      - ${REVERSE_PROXY_NETWORK}
       - ${SITE_NAME}
 
 # Database

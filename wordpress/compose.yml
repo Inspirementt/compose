@@ -14,14 +14,12 @@ version: '2'
 #################### WEBSITE ####################
 # SITE_NAME
 #   - Site name (lowercase without spaces)
-#  SITE_URL
-#   - Site URL (without subdomain. A naked and a "www" subdomain entry is added automatically)
 
 #################### DATABASE ####################
 # DATABASE_PASSWORD
 #   - You normally won't have to manually enter this anywhere, so make it complex
 # MYSQL_ROOT_PASSWORD
-#   - You normally won't have to manually enter this anywhere, so make it complex and different from the database password
+#   - You normally won't have to manually enter this anywhere, so make it complex
 
 
 ####################################################
